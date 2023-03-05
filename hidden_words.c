@@ -3,11 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-
 #define ROW_SIZE        15
 #define COLUMN_SIZE     15
 #define WORDS_SIZE      16
-
 
 char puzzle[ROW_SIZE][COLUMN_SIZE] = {
     {'a', 'x', 'd', 'u', 'r', 'y', 'h', 'p', 's', 'p', 't', 't', 'i', 'd', 't'},
@@ -63,11 +61,73 @@ void display_pattern()
             printf("%c  ", puzzle[i][j]);
         }
         printf("\n");
-    }
-    printf("\n");
-    
+    }    
 }
 
+int check_str_index(char* str, char* substr)
+{ 
+    bool isPresent = false;
+    int i=0;
+    int j=0;
+    for (i = 0; str[i] != '\0'; i++) {
+        isPresent = false;
+        for (j = 0; substr[j] != '\0'; j++) {
+            if (str[i + j] != substr[j]) {
+                isPresent = false;
+                break;
+            }
+            isPresent = true;
+        }
+        if (isPresent) {
+            break;
+        }
+    }
+     
+    if (isPresent) {
+        return i;
+    }
+    return -1;
+}
+
+void row_capitalize_puzzle(int row, int column, int str_length)
+{
+    // printf("checkpoint_2,         %d, %d, %d    ",row, column, str_length);
+    for(int i=0;i<str_length;i++)
+    {
+        // printf("checkpoint 3, %c,   %c\n", puzzle[row+i][column], puzzle[row+i][column] - 32);
+        puzzle[row][column+i] = puzzle[row][column+i] - 32;
+    }
+    printf("%s", puzzle[row]);
+
+}
+
+void row_wise_check()
+{
+    int str_length=0;
+    int str_index=-1;
+    char puzzle_str[COLUMN_SIZE*2];
+    char word[COLUMN_SIZE];
+
+    for(int i=0;i<ROW_SIZE;i++)
+    {
+        for(int j=0;j<COLUMN_SIZE;j++)
+        {
+            puzzle_str[j]=puzzle[i][j];
+        }
+        printf("%d, string  = %s, %ld   ", i, puzzle_str, strlen(puzzle_str));
+        for (int k=0;k<WORDS_SIZE;k++)
+        {
+            strcpy(word, words[k]);
+            str_index = check_str_index(puzzle_str, word);
+            if(str_index!=-1)
+            {
+                printf("checkpoint_1    %s      ", word);
+                row_capitalize_puzzle(i,str_index,strlen(word));
+            }
+        }
+        printf("\n");
+    }  
+}
 
 
 int main() {
@@ -76,6 +136,9 @@ int main() {
     display_pattern();
     printf("\nHidden Words\n");
     display_words();
+
+    row_wise_check();
+
     printf("\n\nPattern after finding the hidden words\n");
     display_pattern();
     return 0;
